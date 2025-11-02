@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestureverse </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInAnonymously, 
+            signInWithCustomToken, 
+            onAuthStateChanged,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signOut 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            setDoc, 
+            getDoc, 
+            collection, 
+            query,
+            setLogLevel 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let app, db, auth;
+        let isAuthReady = false;
+        let currentUserId = null;
+        let currentUserName = null;
+        const USER_PROFILE_COLLECTION = 'user_profiles'; 
+        const THEME_KEY = 'GJ_THEME';
+
+        function getUserProfileDocRef(uid) {
+            
+            return doc(db, 'artifacts', appId, 'users', uid, USER_PROFILE_COLLECTION, 'profile');
+        }
+
+        async function initializeFirebaseAndAuth() {
+            try {
+                
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, async (user) => {
+                    isAuthReady = true;
+
+                    if (user && !user.isAnonymous) {
+                        currentUserId = user.uid;
+                        
+                        const profileSnap = await getDoc(getUserProfileDocRef(user.uid));
+                        if (profileSnap.exists()) {
+                            currentUserName = profileSnap.data().name || user.email;
+                        } else {
+                            
+                            currentUserName = user.email; 
+                        }
+                        
+                    } else {
+                        currentUserId = null;
+                        currentUserName = null;
+                    }
+                    updateAuthStateUI(!!currentUserId, currentUserName);
+                });
+
+            } catch (error) {
+                console.error("Firebase initialization or authentication failed:", error);
+                showGlobalMessage(`Initialization failed: ${error.message}`, 'error');
+                isAuthReady = true;
+                updateAuthStateUI(false, null);
+            }
+        }
+
+
+        async function firebaseSignUp(name, email, password, phone) {
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                await setDoc(getUserProfileDocRef(user.uid), {
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    created: new Date().toISOString(),
+                  
+                    stamps: {
+                        'a01': new Date().toISOString().substring(0, 10),
+                        'a02': new Date().toISOString().substring(0, 10),
+                        'a03': new Date().toISOString().substring(0, 10),
+                    }
+                });
+
+                return { success: true, message: 'Account created successfully!' };
+            } catch (error) {
+                console.error("Sign Up Error:", error);
+                return { success: false, message: `Sign Up Failed: ${error.message}` };
+            }
+        }
+
+        async function firebaseLogIn(email, password) {
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                return { success: true, message: 'Login successful!' };
+            } catch (error) {
+                console.error("Log In Error:", error);
+                return { success: false, message: 'Invalid email or password.' };
+            }
+        }
+
+        async function firebaseLogOut() {
+            try {
+                await signOut(auth);
+                return { success: true };
+            } catch (error) {
+                console.error("Log Out Error:", error);
+                return { success: false, message: 'Failed to log out.' };
+            }
+        }
+
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const loginTab = document.getElementById('login-tab');
+        const signupTab = document.getElementById('signup-tab');
+        const globalMessageBox = document.getElementById('global-message');
+        const themeToggle = document.getElementById('theme-toggle');
+        const sunIcon = document.getElementById('sun-icon');
+        const moonIcon = document.getElementById('moon-icon');
+        const sessionActiveMessage = document.getElementById('session-active-message');
+        const sessionNameDisplay = sessionActiveMessage.querySelector('h2');
+        const authFormsContainer = document.getElementById('auth-forms-container');
+        const logoutButtonAlt = document.getElementById('logout-button-alt');
+        const goToPassportButton = document.getElementById('go-to-passport-button');
+        const authTabs = document.getElementById('auth-tabs');
+        
+        function getTheme() {
+            return localStorage.getItem(THEME_KEY) || 'light';
+        }
+
+        function setTheme(theme) {
+            localStorage.setItem(THEME_KEY, theme);
+            document.documentElement.setAttribute('data-theme', theme);
+            document.documentElement.classList.toggle('dark', theme === 'dark');
+        }
+
+        function applyThemeHandler(theme) {
+            setTheme(theme);
+            
+            if (theme === 'dark') {
+                sunIcon.classList.remove('hidden'); 
+                moonIcon.classList.add('hidden');
+            } else {
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden'); 
+            }
+        }
+        
+        function updateAuthStateUI(isLoggedIn, userName) {
+            if (isLoggedIn) {
+                
+                sessionActiveMessage.classList.remove('hidden');
+                authFormsContainer.classList.add('hidden');
+                authTabs.classList.add('hidden');
+                sessionNameDisplay.textContent = `Welcome Back, ${userName || 'Traveler'}!`;
+            } else {
+               
+                sessionActiveMessage.classList.add('hidden');
+                authFormsContainer.classList.remove('hidden');
+                authTabs.classList.remove('hidden');
+               
+                toggleAuthMode('login');
+            }
+        }
+
+        function clearErrors(form) {
+            form.querySelectorAll('.error-message').forEach(el => {
+                el.classList.add('hidden');
+            });
+            form.querySelectorAll('.input-field').forEach(el => {
+                el.style.borderColor = 'var(--border-color)';
+            });
+            globalMessageBox.classList.add('hidden');
+        }
+
+        function showGlobalMessage(text, type) {
+            globalMessageBox.textContent = text;
+            if (type === 'success') {
+                globalMessageBox.className = 'p-3 rounded-lg text-center text-sm block font-medium bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-100 theme-transition';
+            } else { 
+                globalMessageBox.className = 'p-3 rounded-lg text-center text-sm block font-medium bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-100 theme-transition';
+            }
+        }
+        function displayErrors(formId, errors) {
+            Object.keys(errors).forEach(field => {
+             
+                const errorEl = document.getElementById(`error-${formId}-${field}`);
+                const inputEl = document.getElementById(`${formId}-${field}`);
+                if (errorEl) {
+                    errorEl.textContent = errors[field];
+                    errorEl.classList.remove('hidden');
+                    if(inputEl) inputEl.style.borderColor = '#EF4444'; 
+                }
+            });
+        }
+        
+        function validateForm({ name, email, password }) {
+            const errors = {};
+            let valid = true;
+
+            if (!email || !email.includes('@') || email.length < 5) {
+                errors.email = 'Please enter a valid email address.';
+                valid = false;
+            }
+
+            if (!password || password.length < 8) {
+                errors.password = 'Password must be at least 8 characters.';
+                valid = false;
+            } else if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
+                errors.password = 'Password requires upper, lower, and number.';
+                valid = false;
+            }
+
+            if (name && name !== 'dummy' && name.length < 2) {
+                errors.name = 'Full Name is required.';
+                valid = false;
+            }
+
+            return { valid, errors };
+        }
+
+
+        function toggleAuthMode(mode) {
+            clearErrors(loginForm);
+            clearErrors(signupForm);
+
+            const activeClasses = ['text-[color:var(--primary)]', 'border-[color:var(--primary)]'];
+            const inactiveClasses = ['text-gray-400', 'hover:text-gray-600', 'dark:text-gray-500', 'dark:hover:text-gray-300', 'border-gray-200', 'dark:border-gray-700'];
+
+            if (mode === 'login') {
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                
+                loginTab.classList.add(...activeClasses);
+                loginTab.classList.remove(...inactiveClasses);
+                signupTab.classList.add(...inactiveClasses);
+                signupTab.classList.remove(...activeClasses);
+
+            } else { 
+                loginForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+
+                signupTab.classList.add(...activeClasses);
+                signupTab.classList.remove(...inactiveClasses);
+                loginTab.classList.add(...inactiveClasses);
+                loginTab.classList.remove(...activeClasses);
+            }
+        }
+
+       
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeFirebaseAndAuth();
+            applyThemeHandler(getTheme());
+        });
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = getTheme();
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyThemeHandler(newTheme);
+        });
+
+        loginTab.addEventListener('click', () => toggleAuthMode('login'));
+        signupTab.addEventListener('click', () => toggleAuthMode('signup'));
+        
+        logoutButtonAlt.addEventListener('click', async () => {
+            await firebaseLogOut();
+           
+        });
+
+        goToPassportButton.addEventListener('click', () => {
+            
+            showGlobalMessage("Navigating to Passport Page...", 'success');
+            
+        });
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearErrors(loginForm);
+
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            const validationResult = validateForm({ email, password, name: 'dummy' });
+            if (!validationResult.valid && (validationResult.errors.email || validationResult.errors.password)) {
+                const loginErrors = {};
+                if (validationResult.errors.email) loginErrors.email = validationResult.errors.email;
+                if (validationResult.errors.password) loginErrors.password = validationResult.errors.password;
+                displayErrors('login', loginErrors);
+                return;
+            }
+
+            const result = await firebaseLogIn(email, password);
+
+            if (!result.success) {
+                showGlobalMessage(result.message, 'error');
+            } else {
+                
+                showGlobalMessage(result.message, 'success');
+            }
+        });
+
+        signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearErrors(signupForm);
+
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const phone = document.getElementById('signup-phone').value;
+
+            const validationResult = validateForm({ name, email, password });
+            if (!validationResult.valid) {
+                 displayErrors('signup', validationResult.errors);
+                 return;
+            }
+
+            const result = await firebaseSignUp(name, email, password, phone);
+
+            if (result.success) {
+                showGlobalMessage(result.message, 'success');
+            } else {
+                showGlobalMessage(result.message, 'error');
+            }
+        });
+        
+    </script>
+
+    <style>
+        
+        :root {
+            --primary: #0D9488; 
+            --primary-light: #14B8A6; 
+            --text-base: #1F2937; 
+            --bg-base: #F9FAFB; 
+            --card-bg: #FFFFFF; 
+            --border-color: #E5E7EB; 
+        }
+
+        [data-theme="dark"] {
+            --primary: #2DD4BF; 
+            --primary-light: #14B8A6;
+            --text-base: #F3F4F6; 
+            --bg-base: #111827; 
+            --card-bg: #1F2937; 
+            --border-color: #374151; 
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-base);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .theme-transition {
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            color: var(--text-base);
+        }
+
+        .nav-button {
+            color: var(--text-base);
+            opacity: 0.7;
+        }
+        .nav-button:hover {
+            opacity: 1;
+            color: var(--primary);
+        }
+
+        .input-field {
+            border-color: var(--border-color);
+            background-color: var(--card-bg);
+            color: var(--text-base);
+        }
+
+        .input-field:focus {
+            border-color: var(--primary-light);
+            outline: none;
+          
+            box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.5); 
+        }
+        
+        .text-\[color\:var\(\-\-primary\)\] { color: var(--primary) !important; }
+        .border-\[color\:var\(\-\-primary\)\] { border-color: var(--primary) !important; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen theme-transition">
+
+    <header class="p-4 flex justify-between items-center border-b border-gray-200 sticky top-0 z-10 theme-transition card">
+        <h1 class="text-2xl font-extrabold text-[color:var(--primary)]">Gestureverse </h1>
+        <div class="flex items-center space-x-6">
+            <nav class="space-x-4 hidden sm:block">
+                <a href="#" class="nav-button hover:text-[color:var(--primary)] theme-transition">Home</a>
+                <a href="#" class="nav-button hover:text-[color:var(--primary)] theme-transition">Explorer</a>
+                <a href="passport.html" class="nav-button hover:text-[color:var(--primary)] theme-transition">Passport</a>
+            </nav>
+           
+            <button id="theme-toggle" aria-label="Toggle dark mode" class="nav-button p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 theme-transition">
+                <svg id="moon-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+              
+                <svg id="sun-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow flex items-center justify-center p-4">
+        <div class="card w-full max-w-md rounded-xl shadow-2xl overflow-hidden theme-transition">
+           
+            <div id="auth-tabs" class="flex">
+                <button id="login-tab" class="flex-1 py-4 text-center text-lg font-semibold border-b-4 text-[color:var(--primary)] border-[color:var(--primary)] transition-colors duration-300">
+                    Welcome Back
+                </button>
+                <button id="signup-tab" class="flex-1 py-4 text-center text-lg font-semibold text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 border-b-4 border-gray-200 dark:border-gray-700 transition-colors duration-300">
+                    Sign Up
+                </button>
+            </div>
+            
+            <div id="session-active-message" class="p-8 text-center hidden">
+                <h2 class="text-xl font-bold mb-4 text-[color:var(--primary)]"></h2>
+                <p class="mb-6 text-gray-600 dark:text-gray-400">
+                    You are already logged in! Click below to continue your journey or log out to test the forms.
+                </p>
+                <button id="go-to-passport-button" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-lg text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition duration-150 transform hover:scale-[1.01] theme-transition">
+                    Continue to Passport
+                </button>
+                <button id="logout-button-alt" class="w-full mt-3 flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 transform hover:scale-[1.01] theme-transition">
+                    Log Out
+                </button>
+            </div>
+            
+            <div id="auth-forms-container" class="p-8 space-y-4">
+                <div id="global-message" class="p-3 rounded-lg text-center text-sm hidden font-medium transition-opacity duration-300"></div>
+
+                <form id="login-form" class="space-y-6">
+                    <div class="space-y-4">
+                        <div class="input-group">
+                            <label for="login-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                            <input type="email" id="login-email" name="email" required class="input-field mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-1 theme-transition">
+                            <p class="error-message text-xs text-red-500 mt-1 hidden" id="error-login-email"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="login-password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+                            <input type="password" id="login-password" name="password" required class="input-field mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-1 theme-transition">
+                            <p class="error-message text-xs text-red-500 mt-1 hidden" id="error-login-password"></p>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-lg text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition duration-150 transform hover:scale-[1.01] theme-transition">
+                        Log In
+                    </button>
+                </form>
+
+                <form id="signup-form" class="space-y-6 hidden">
+                    <div class="space-y-4">
+                        <div class="input-group">
+                            <label for="signup-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
+                            <input type="text" id="signup-name" name="name" required class="input-field mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-1 theme-transition">
+                            <p class="error-message text-xs text-red-500 mt-1 hidden" id="error-signup-name"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="signup-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
+                            <input type="email" id="signup-email" name="email" required class="input-field mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-1 theme-transition">
+                            <p class="error-message text-xs text-red-500 mt-1 hidden" id="error-signup-email"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="signup-password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password (Min 8 Chars, Upper/Lower/Number)</label>
+                            <input type="password" id="signup-password" name="password" required class="input-field mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-1 theme-transition">
+                            <p class="error-message text-xs text-red-500 mt-1 hidden" id="error-signup-password"></p>
+                        </div>
+                        <div class="input-group">
+                            <label for="signup-phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone Number (Optional)</label>
+                            <input type="tel" id="signup-phone" name="phone" class="input-field mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-1 theme-transition">
+                            <p class="error-message text-xs text-red-500 mt-1 hidden" id="error-signup-phone"></p>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-lg text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition duration-150 transform hover:scale-[1.01] theme-transition">
+                        Create Account
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </main>
+    
+    
+    <footer class="p-4 text-center text-sm text-gray-500 border-t border-gray-200 dark:border-gray-700 theme-transition card">
+        &copy; 2025 Gestureverse.AITU Web Techonolgies Final Project.
+    </footer>
+</body>
+</html>

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Digital Gesture Passport</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #0D9488; 
+            --secondary: #F59E0B; 
+            --bg-dark: #1F2937; 
+            --card-bg: #374151; 
+            --text-light: #F3F4F6;
+            --text-dark: #1F2937;
+            --passport-base: #2D3748;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Inter', sans-serif;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1000 500' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='none' stroke='%23374151' stroke-width='1' opacity='0.5' d='M 100,50 L 900,50 L 900,450 L 100,450 Z'/%3E%3Cpath fill='none' stroke='%23374151' stroke-width='1' opacity='0.5' d='M 100,250 C 300,100 700,400 900,250 C 700,100 300,400 100,250 Z'/%3E%3Cpath fill='none' stroke='%23374151' stroke-width='1' opacity='0.5' d='M 500,50 L 500,450'/%3E%3Cpath fill='none' stroke='%23374151' stroke-width='1' opacity='0.5' d='M 100,150 L 900,150'/%3E%3Cpath fill='none' stroke='%23374151' stroke-width='1' opacity='0.5' d='M 100,350 L 900,350'/%3E%3C/svg%3E");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .dark body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+        }
+        .dark .passport-container {
+            background: var(--passport-base);
+        }
+        .dark .footer-bg {
+             background-color: var(--bg-dark);
+        }
+
+        [data-theme="light"] {
+            --primary: #059669; 
+            --secondary: #D97706; 
+            --bg-dark: #F3F4F6; 
+            --text-light: #1F2937;
+            --passport-base: #FFFFFF;
+        }
+        [data-theme="light"] body {
+             background-image: none;
+             background-color: var(--bg-dark);
+             color: var(--text-light);
+        }
+        [data-theme="light"] .passport-top-banner {
+            background-color: var(--primary);
+        }
+        [data-theme="light"] .passport-container {
+            background: var(--passport-base);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.2);
+        }
+        [data-theme="light"] .nav-link { color: #4B5563; }
+        [data-theme="light"] .nav-link:hover { color: var(--primary); }
+        [data-theme="light"] header { background-color: #FFFFFF; border-color: #E5E7EB; }
+        [data-theme="light"] .bg-footer { background-color: var(--bg-dark); border-color: #E5E7EB; }
+        [data-theme="light"] .bg-details { background-color: #F9FAFB; }
+
+
+        .theme-transition {
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .passport-container {
+            max-width: 960px;
+            margin: 40px auto;
+            background: var(--passport-base);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .nav-link { color: #D1D5DB; }
+        .nav-link:hover { color: var(--primary); }
+
+        .passport-top-banner {
+            background-color: var(--primary); 
+            padding: 30px 40px;
+            color: white;
+            position: relative;
+        }
+        
+        .progress-bar-container {
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: var(--secondary); 
+            border-radius: 4px;
+        }
+
+        .stamp-grid {
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 20px;
+            padding: 40px;
+        }
+        
+        .stamp-item {
+            text-align: center;
+            height: 140px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .stamp-item.unlocked {
+            background: rgba(0, 0, 0, 0.2);
+            border: 3px solid var(--secondary);
+            box-shadow: 0 0 15px var(--secondary), inset 0 0 5px rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+        }
+        .unlocked-emoji {
+            font-size: 3rem;
+            line-height: 1;
+        }
+
+        .stamp-item.locked {
+            background: rgba(0, 0, 0, 0.1);
+            border: 3px dashed rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.3);
+            opacity: 0.6;
+        }
+        .locked-icon {
+            width: 3rem;
+            height: 3rem;
+        }
+        
+        .profile-card-details {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+            border-left: 4px solid var(--secondary);
+        }
+        
+        @media (max-width: 640px) {
+            .passport-container {
+                margin: 20px 10px;
+            }
+            .passport-top-banner {
+                padding: 20px;
+            }
+            .stamp-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                padding: 20px;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col theme-transition">
+
+    <header class="p-4 flex justify-between items-center border-b border-gray-700 sticky top-0 z-20 bg-[#2D3748] shadow-lg theme-transition">
+        <h1 class="text-2xl font-extrabold text-[color:var(--primary)]">Gesture Journey</h1>
+        <div class="flex items-center space-x-6">
+            <nav class="space-x-4 hidden sm:block">
+                <a href="#" class="nav-link">Home</a>
+                <a href="#" class="nav-link">Explorer</a>
+                <a href="#" class="nav-link font-semibold border-b-2 border-[color:var(--primary)] text-[color:var(--primary)]">Passport</a>
+                <a href="#" class="nav-link">Quiz</a>
+                <a href="#" class="nav-link">About</a>
+            </nav>
+            <button id="theme-toggle" aria-label="Toggle dark mode" class="nav-link p-2 rounded-full hover:bg-gray-700 theme-transition">
+                <svg id="sun-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <svg id="moon-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+            </button>
+            <button id="logout-button" class="px-3 py-1 text-sm rounded-lg bg-red-500 text-white font-medium hover:bg-red-600 transition duration-150 transform hover:scale-[1.05]">Logout</button>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <div class="passport-container">
+
+            <div class="passport-top-banner">
+                <div class="flex justify-end items-center mb-4 space-x-2">
+                    <p id="progress-text" class="text-sm font-medium">STATUS: Loading...</p>
+                    <div class="w-2 h-2 rounded-full bg-white/50 border border-white"></div>
+                </div>
+                <div class="progress-bar-container mb-8">
+                    <div id="progress-bar" class="progress-bar transition-all duration-700 ease-out" style="width: 0%;"></div>
+                </div>
+
+                <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-6">Your Digital Gesture Passport</h2>
+                
+                <div class="flex items-start space-x-4 p-4 rounded-xl bg-black/10 max-w-sm">
+                    <svg class="w-12 h-12 text-white/80" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 4a4 4 0 100 8 4 4 0 000-8zm0 10c-4.42 0-8 1.79-8 4v2h16v-2c0-2.21-3.58-4-8-4z"></path></svg>
+                    <div>
+                        <p id="user-name" class="font-bold text-lg leading-tight">LOADING NAME...</p>
+                        <p id="user-uid" class="text-xs opacity-80 mt-1" style="font-family: 'Roboto Mono', monospace;">UID: Authenticating...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative z-10">
+                <div class="p-8">
+                    <h3 class="text-2xl font-bold mb-6 text-[color:var(--secondary)]">EXPLORATION STAMPS</h3>
+                    <div id="stamp-grid" class="stamp-grid">
+                        <div class="text-center text-gray-400 p-8 col-span-full" id="loading-message">Authenticating credentials and loading official records...</div>
+                    </div>
+                </div>
+
+                <div class="bg-[#27303E] p-8 mt-4 bg-details theme-transition">
+                    <h3 class="text-lg font-semibold text-[color:var(--primary)] mb-4">OFFICIAL RECORD DETAILS</h3>
+                    <div id="id-data-zone" class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm profile-card-details">
+                        <div>
+                            <span class="text-gray-400 block uppercase text-[10px] tracking-widest">Passport Holder</span>
+                            <p class="font-medium text-white/90" id="user-detail-name">...</p>
+                        </div>
+                        <div>
+                            <span class="text-gray-400 block uppercase text-[10px] tracking-widest">Digital ID (Email/UID)</span>
+                            <p class="font-medium text-white/90" id="user-detail-email">...</p>
+                        </div>
+                        <div>
+                            <span class="text-gray-400 block uppercase text-[10px] tracking-widest">Registration Date</span>
+                            <p class="font-medium text-white/90" id="user-reg-date">...</p>
+                        </div>
+                        <div class="sm:col-span-1 col-span-2">
+                            <span class="text-gray-400 block uppercase text-[10px] tracking-widest">User ID (For Sharing/Debugging)</span>
+                            <p class="font-medium text-white/90 break-all" id="user-detail-uid">...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="p-4 text-center text-sm text-gray-500 border-t border-gray-700 bg-[#1F2937] mt-auto footer-bg theme-transition">
+        &copy; 2025 Gestureverse. AITU Web Technologies Final Project.
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        const PASSPORT_DOC_ID = 'status';
+        const THEME_KEY = 'GJ_THEME';
+
+        const MOCK_GESTURES = [
+            { id: 'a01', name: 'Thumbs Up', emoji: '👍', country: 'US' },
+            { id: 'a02', name: 'OK Sign', emoji: '👌', country: 'France' },
+            { id: 'a03', name: 'Handshake', emoji: '🤝', country: 'Global' },
+            { id: 'a04', name: 'Shaka Sign', emoji: '🤙', country: 'Hawaii' },
+            { id: 'a05', name: 'High Five', emoji: '🖐️', country: 'Global' },
+            { id: 'b01', name: 'Head Nod', emoji: ' nodding', country: 'Greece' },
+            { id: 'b02', name: 'Hand Wave', emoji: '👋', country: 'Global' },
+            { id: 'b03', name: 'Fist Bump', emoji: '👊', country: 'Global' },
+            { id: 'c01', name: 'Kiss Cheeks', emoji: '😚', country: 'Italy' },
+            { id: 'c02', name: 'Wink', emoji: '😉', country: 'Global' },
+        ];
+
+        let app, db, auth;
+        let userId = 'authenticating'; 
+
+        const stampGrid = document.getElementById('stamp-grid');
+        const userNameEl = document.getElementById('user-name');
+        const userUidEl = document.getElementById('user-uid');
+        const userRegDateEl = document.getElementById('user-reg-date');
+        const progressBarEl = document.getElementById('progress-bar');
+        const progressTextEl = document.getElementById('progress-text');
+        const logoutButton = document.getElementById('logout-button');
+        const loadingMessage = document.getElementById('loading-message');
+        const themeToggle = document.getElementById('theme-toggle');
+        const sunIcon = document.getElementById('sun-icon');
+        const moonIcon = document.getElementById('moon-icon');
+        const userDetailNameEl = document.getElementById('user-detail-name');
+        const userDetailEmailEl = document.getElementById('user-detail-email');
+        const userDetailUidEl = document.getElementById('user-detail-uid');
+
+        function formatUserDate(isoDate) {
+            if (!isoDate) return 'N/A';
+            try {
+                return new Date(isoDate).toISOString().split('T')[0];
+            } catch (e) {
+                return 'N/A';
+            }
+        }
+
+        function getTheme() {
+            return localStorage.getItem(THEME_KEY) || 'dark';
+        }
+
+        function setTheme(theme) {
+            localStorage.setItem(THEME_KEY, theme);
+            document.documentElement.setAttribute('data-theme', theme);
+            if (theme === 'dark') {
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            } else {
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            }
+        }
+
+
+        async function initializeFirebase() {
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                setLogLevel('Debug'); 
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        console.log("Firebase Auth Ready. UID:", userId);
+                        
+                        setupFirestoreListener(user.email);
+                    } else {
+                        userId = crypto.randomUUID();
+                        console.log("Signed in anonymously or Auth token missing/invalid. Using UUID:", userId);
+                        setupFirestoreListener('anonymous@passport.com');
+                    }
+                });
+
+            } catch (error) {
+                console.error("Error initializing Firebase or authentication:", error);
+                if (loadingMessage) {
+                     loadingMessage.textContent = "Error loading data. Check console for details.";
+                }
+            }
+        }
+
+        function getPassportDocRef(currentUserId) {
+           
+            return doc(db, 
+                'artifacts', appId, 
+                'users', currentUserId, 
+                'passport_data', PASSPORT_DOC_ID
+            );
+        }
+
+        async function createInitialPassport(email) {
+            const initialStamps = MOCK_GESTURES.slice(0, 3).reduce((acc, gesture, index) => {
+                acc[gesture.id] = formatUserDate(new Date(Date.now() - (index * 86400000)).toISOString());
+                return acc;
+            }, {});
+
+            const initialData = {
+                name: 'Digital Explorer',
+                email: email,
+                created: new Date().toISOString(),
+                stamps: initialStamps,
+            };
+            
+            const docRef = getPassportDocRef(userId);
+            
+            try {
+                await setDoc(docRef, initialData, { merge: false });
+                console.log("Initial passport created successfully.");
+                return initialData;
+            } catch (e) {
+                console.error("Error creating initial passport:", e);
+                return initialData; 
+            }
+        }
+
+        function setupFirestoreListener(authEmail) {
+            const docRef = getPassportDocRef(userId);
+
+            onSnapshot(docRef, async (docSnap) => {
+                let passportData = {};
+                if (docSnap.exists()) {
+                    passportData = docSnap.data();
+                    console.log("Passport Data fetched:", passportData);
+                } else {
+                    console.log("No passport found. Creating initial data.");
+                    passportData = await createInitialPassport(authEmail);
+                }
+                renderPassport(passportData);
+
+            }, (error) => {
+                console.error("Error listening to Firestore document:", error);
+                if (loadingMessage) {
+                    loadingMessage.textContent = "Error reading data stream. Please try again.";
+                }
+            });
+        }
+
+        
+        function renderPassport(passportData) {
+            if (loadingMessage) {
+                loadingMessage.remove(); 
+            }
+            
+            const stamps = passportData.stamps || {};
+            const unlockedCount = Object.keys(stamps).length;
+            const totalGestures = MOCK_GESTURES.length;
+            const progress = Math.round((unlockedCount / totalGestures) * 100);
+            
+            const userDetails = {
+                name: passportData.name || 'Digital Explorer',
+                email: passportData.email || 'anonymous@passport.com',
+                created: passportData.created,
+                uid: userId
+            };
+
+            userNameEl.textContent = userDetails.name.toUpperCase();
+            userUidEl.textContent = `UID: ${userDetails.uid.substring(0, 8)}...`;
+            
+            userDetailNameEl.textContent = userDetails.name.toUpperCase();
+            userDetailEmailEl.textContent = userDetails.email;
+            userDetailUidEl.textContent = userDetails.uid;
+            userRegDateEl.textContent = formatUserDate(userDetails.created);
+
+            progressTextEl.textContent = `${unlockedCount} / ${totalGestures} (${progress}%) Complete`; 
+            progressBarEl.style.width = `${progress}%`;
+
+            stampGrid.innerHTML = '';
+
+            MOCK_GESTURES.forEach(gesture => {
+                const isUnlocked = !!stamps[gesture.id];
+                const date = stamps[gesture.id];
+
+                const stampDiv = document.createElement('div');
+                stampDiv.className = `stamp-item ${isUnlocked ? 'unlocked' : 'locked'} p-2`;
+                
+                if (isUnlocked) {
+                    stampDiv.innerHTML = `
+                        <span class="unlocked-emoji">${gesture.emoji}</span>
+                        <p class="text-[10px] font-bold mt-2 uppercase tracking-wider">${gesture.name}</p>
+                        <p class="text-[8px] mt-0.5 opacity-80" style="font-family: 'Roboto Mono', monospace;">${date}</p>
+                    `;
+                } else {
+                    stampDiv.innerHTML = `
+                        <svg class="locked-icon opacity-50 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        <p class="text-[10px] font-medium mt-2 uppercase tracking-wider">LOCKED</p>
+                        <p class="text-[8px] mt-0.5 opacity-80">${gesture.country}</p>
+                    `;
+                }
+
+                stampGrid.appendChild(stampDiv);
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            setTheme(getTheme());
+
+            initializeFirebase();
+        });
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = getTheme();
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(newTheme);
+        });
+
+        logoutButton.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+              
+                window.location.reload(); 
+            } catch (error) {
+                console.error("Error signing out:", error);
+                window.location.reload();
+            }
+        });
+    </script>
+</body>
+</html>
