@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  fetch('./gestures.json') // ✅ дәл осылай жаз
+  fetch('./gestures.json')
     .then(response => {
       if (!response.ok) {
         throw new Error('Failed to load gestures.json');
@@ -55,7 +55,6 @@ animateCards();
       alert('⚠️ Could not load gestures.json. Please use Live Server to run the project.');
     });
 });
-// Анимациямен пайда болу
 function animateCards() {
   const cards = document.querySelectorAll('.gesture-card');
   cards.forEach((card, i) => {

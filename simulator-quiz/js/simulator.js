@@ -1,194 +1,182 @@
+const BASE_IMG_PATH = '/web-final/simulator-quiz/images/simulator/';
 const DELAY = 4000; 
-
 let currentIndex = 0; 
-let currentKey = '';
+let currentKey = ''; 
 
-// data for selectors
-const G_DATA = {
-    "thumbsUp": {
-        emoji: "👍",
-        regions: {
-            "middleEast": { name: "Middle East", key: "thumbsUp_ME" }
-        }
-    }
-};
-
-// data for comic strip frames
 const SCNRS = {
     "thumbsUp_ME": { 
+        name: "Thumbs Up in the Middle East",
         states: [ 
             { 
-                text: "Scene 1: Tourist takes a photo of the local.",
-                b1: { img: "images/simulator/thumbsup/c1p1.webp", cap: "Nice shot!" },
-                b2: { img: "images/simulator/thumbsup/c2p1.webp", cap: "Ready!" }, 
-                b3: { img: "images/simulator/thumbsup/c3p1.webp", cap: "" } 
+                text: "Tourist takes a photo for a local, then gives a Thumbs Up (👍) to say 'Perfect!'",
+                b1: { img: BASE_IMG_PATH + "thumbsup/c1p1.webp", cap: "Nice shot!" },
+                b2: { img: BASE_IMG_PATH + "thumbsup/c2p1.webp", cap: "Ready!" }, 
+                b3: { img: BASE_IMG_PATH + "thumbsup/c3p1.webp", cap: "Perfect!" } 
             },
             { 
-                text: "Scene 2: Tourist flashes a Thumbs Up (👍) to say 'Perfect!'",
-                b1: { img: "images/simulator/thumbsup/c1p2.webp", cap: "Perfect!" },
-                b2: { img: "images/simulator/thumbsup/c2p2.webp", cap: "INSULTED!" }, 
-                b3: { img: "images/simulator/thumbsup/c3p2.webp", cap: "NO!" } ,
-                finalMessage: "<strong>Cultural Lesson:</strong> The Thumbs Up (👍) gesture is considered highly rude and vulgar in several Middle Eastern and West African countries, often equivalent to the middle finger in the West."
+                text: "The local immediately reacts with surprise and offense!",
+                b1: { img: BASE_IMG_PATH + "thumbsup/c1p2.webp", cap: "UP YOURS!" },
+                b2: { img: BASE_IMG_PATH + "thumbsup/c2p2.webp", cap: "INSULTED!" }, 
+                b3: { img: BASE_IMG_PATH + "thumbsup/c3p2.webp", cap: "NO!!" } ,
+                finalMessage: "<strong>Cultural Lesson:</strong> The Thumbs Up (👍) gesture is considered highly rude and vulgar in several Middle Eastern and West African countries, equivalent to the middle finger. <strong>DO NOT USE IT!</strong>"
+            }
+        ]
+    },
+    "okSign_BRA": { 
+        name: "OK Sign in Brazil",
+        states: [ 
+            { 
+                text: "Tourist orders food and happily gives an OK sign (👌) to confirm the order.",
+                b1: { img: BASE_IMG_PATH + "ok/c1p1.webp", cap: "Delicious food!" },
+                b2: { img: BASE_IMG_PATH + "ok/c2p1.webp", cap: "I'll take it." }, 
+                b3: { img: BASE_IMG_PATH + "ok/c3p1.webp", cap: "OK! 👌" } 
             },
+            { 
+                text: "The waiter is deeply offended and rushes off to complain.",
+                b1: { img: BASE_IMG_PATH + "ok/c1p2.webp", cap: "VULGAR!" },
+                b2: { img: BASE_IMG_PATH + "ok/c2p2.webp", cap: "Offensive!" }, 
+                b3: { img: BASE_IMG_PATH + "ok/c3p2.webp", cap: "Apologize!" } ,
+                finalMessage: "<strong>Cultural Lesson:</strong> The 'OK' Sign (👌) is highly offensive in Brazil and some other countries (like Turkey), where it is interpreted as an insult or vulgar reference. <strong>USE ONLY THUMBS UP (👍) FOR OK.</strong>"
+            }
         ]
     }
 };
 
-$(document).ready(function() {
-    const $gSelect = $('#gesture-select');
-    const $rSelect = $('#region-select');
-    const $startBtn = $('#start-simulation-btn');
-    const $restartBtn = $('#restart-btn');
+// data for selectors
+const G_DATA = {
+    "thumbsUp": { emoji: "👍", name: "Thumbs Up", regions: { "middleEast": { name: "Middle East (Iran, Iraq...)", key: "thumbsUp_ME" } } },
+    "okSign": { emoji: "👌", name: "OK Sign", regions: { "brazil": { name: "Brazil", key: "okSign_BRA" } } }
+};
 
-    $gSelect.on('change', function() {
-        const gesture = $(this).val();
-        $rSelect.empty().append('<option value="" disabled selected>Choose a region...</option>').prop('disabled', true);
-        $startBtn.prop('disabled', true);
+const gestureSelect = document.getElementById('gesture-select');
+const regionSelect = document.getElementById('region-select');
+const startBtn = document.getElementById('start-simulation-btn');
+const restartBtn = document.getElementById('restart-btn');
+const selectorSection = document.getElementById('scenario-selector');
+const simulatorContainer = document.getElementById('simulator-container');
+const finalMessageBox = document.getElementById('final-message-box');
+const scenarioCaption = document.getElementById('scenario-caption');
 
-        if (gesture && G_DATA[gesture]) {
-            const regions = G_DATA[gesture].regions;
-            $.each(regions, function(key, data) {
-                if (data.key) {
-                    $rSelect.append(
-                        `<option value="${data.key}">${data.name}</option>`
-                    );
-                }
-            });
 
-            $rSelect.prop('disabled', false); 
-        }
+function initSelectors() {
+    // fill gesture select
+    gestureSelect.innerHTML = '<option value="" disabled selected>Select a gesture...</option>';
+    Object.keys(G_DATA).forEach(key => {
+        const gesture = G_DATA[key];
+        const option = new Option(`${gesture.emoji} ${gesture.name}`, key);
+        gestureSelect.add(option);
     });
 
-    $rSelect.on('change', function() {
-        const key = $(this).val();
-        $startBtn.prop('disabled', !key);
+    // event listeners
+    gestureSelect.addEventListener('change', updateRegionSelect);
+    regionSelect.addEventListener('change', () => {
+        startBtn.disabled = regionSelect.value === '';
     });
+    startBtn.addEventListener('click', startSimulation);
+    restartBtn.addEventListener('click', restartSimulation);
 
-    $startBtn.on('click', function() {
-        currentKey = $rSelect.val();
-        startSimulation();
+    // initial state
+    regionSelect.innerHTML = '<option value="" disabled selected>Select a region...</option>';
+}
+
+function updateRegionSelect() {
+    const selectedGestureKey = gestureSelect.value;
+    const regions = G_DATA[selectedGestureKey]?.regions || {};
+
+    regionSelect.innerHTML = '<option value="" disabled selected>Select a region...</option>';
+    regionSelect.disabled = Object.keys(regions).length === 0;
+
+    Object.keys(regions).forEach(regionKey => {
+        const region = regions[regionKey];
+        const option = new Option(region.name, region.key);
+        regionSelect.add(option);
     });
-
-    $restartBtn.on('click', function() {
-        resetSimulation();
-    });
-
-});
+    startBtn.disabled = true;
+}
 
 function startSimulation() {
-    $('#scenario-selector').hide();
-    $('#simulator-container').fadeIn(600);
+    currentKey = regionSelect.value;
     currentIndex = 0;
-    $('#restart-btn').hide(); 
-    $('#final-message-box').hide().empty();
-    updatePanel();
-    autoAdvance();
+
+    if (!currentKey) return alert("Please select both a gesture and a region.");
+    // hide selector, show simulator
+    selectorSection.style.display = 'none';
+    simulatorContainer.style.display = 'block';
+    finalMessageBox.style.display = 'none';
+    restartBtn.style.display = 'none';
+    
+    document.getElementById('img-1').src = '';
+    document.getElementById('img-2').src = '';
+    document.getElementById('img-3').src = '';
+
+    playNextPanel();
 }
 
-function updatePanel() {
+function playNextPanel() {
     const scenario = SCNRS[currentKey];
     const state = scenario.states[currentIndex];
-    
-    const $grid = $('#comic-panel-grid');
-    const $imgs = $grid.find('img');
-    $imgs.removeClass('show-animated'); 
+ 
+    scenarioCaption.textContent = state.text;
 
-    $('#img-1').attr('src', state.b1.img).attr('alt', state.b1.cap);
-    $('#text-1').text(state.b1.cap);
+    document.getElementById('img-1').src = state.b1.img;
+    document.getElementById('text-1').textContent = state.b1.cap;
     
-    $('#img-2').attr('src', state.b2.img).attr('alt', state.b2.cap);
-    $('#text-2').text(state.b2.cap);
-
-    $('#img-3').attr('src', state.b3.img).attr('alt', state.b3.cap);
-    $('#text-3').text(state.b3.cap);
+    document.getElementById('img-2').src = state.b2.img;
+    document.getElementById('text-2').textContent = state.b2.cap;
     
-    $grid.animate({ opacity: 1 }, 300, function() { 
-        $imgs.addClass('show-animated');
-    });
-}
+    document.getElementById('img-3').src = state.b3.img;
+    document.getElementById('text-3').textContent = state.b3.cap;
+    
 
-function autoAdvance() {
-    const states = SCNRS[currentKey].states; 
-    const $simContainer = $('#simulator-container');
-    if (currentIndex === 0) {
-        currentIndex = 1;
-        setTimeout(function() {
-            $simContainer.fadeOut(500, function() { 
-                updatePanel(); 
-                $simContainer.fadeIn(500, function() {
-                    const finalMessage = states[1].finalMessage;
-                    if (finalMessage) {
-                         setTimeout(function() {
-                             $('#final-message-box').html(finalMessage).fadeIn(500);
-                         }, 700); 
-                    }
-                    autoAdvance();
-                });
-            });
-        }, DELAY);
-        return;
-    }
-    if (currentIndex === 1) {
-        setTimeout(function() {
-             $('#restart-btn').show();
-        }, DELAY);
-        return;
+    showImagesSequential(400); 
+
+    if (currentIndex === scenario.states.length - 1) {
+        setTimeout(showFinalMessage, DELAY); 
+    } else {
+        currentIndex++; 
+        setTimeout(playNextPanel, DELAY); 
     }
 }
 
-function resetSimulation() {
-    $('#simulator-container').hide();
-    $('#scenario-selector').fadeIn(600);
-    $('#gesture-select').val('');
-    $('#region-select').empty().append('<option value="" disabled selected>Choose a region...</option>').prop('disabled', true);
-    $('#start-simulation-btn').prop('disabled', true);
+function showFinalMessage() {
+    const scenario = SCNRS[currentKey];
+    const finalState = scenario.states[scenario.states.length - 1];
+
+    finalMessageBox.innerHTML = finalState.finalMessage;
+    finalMessageBox.style.display = 'block';
+    restartBtn.style.display = 'block';
 }
 
+function restartSimulation() {
+    currentIndex = 0;
+    currentKey = '';
+  
+    simulatorContainer.style.display = 'none';
+    selectorSection.style.display = 'block';
+    
+    gestureSelect.value = '';
+    updateRegionSelect(); 
+    startBtn.disabled = true;
+}
 
 function showImagesSequential(step = 220) {
-  const ids = ['#img-1', '#img-2', '#img-3'];
-  ids.forEach(sel => {
-    const el = document.querySelector(sel);
-    if (!el) return;
-    el.classList.remove('show-animated');
-    el.style.animationDelay = '0s';
-    void el.offsetWidth;
-  });
-
-  const waits = ids.map(sel => new Promise(res => {
-    const img = document.querySelector(sel);
-    if (!img) return res();
-    if (img.complete) return res();
-    img.addEventListener('load', res, { once: true });
-    img.addEventListener('error', res, { once: true });
-  }));
-
-  Promise.all(waits).then(() => {
-    ids.forEach((sel, i) => {
-      const el = document.querySelector(sel);
-      if (!el) return;
-      el.style.animationDelay = (i * step) + 'ms';
-    });
+    const ids = ['#block-1', '#block-2', '#block-3'];
+    
     ids.forEach(sel => {
-      const el = document.querySelector(sel);
-      if (el) el.classList.add('show-animated');
+        const el = document.querySelector(sel + ' .reveal');
+        if (el) el.classList.remove('show-animated');
+        void el.offsetWidth;
     });
-  });
+
+    ids.forEach((sel, i) => {
+        const el = document.querySelector(sel + ' .reveal');
+        if (!el) return;
+        setTimeout(() => {
+            el.classList.add('show-animated');
+        }, i * step);
+    });
 }
 
-function updatePanel() {
-  const scenario = SCNRS[currentKey];
-  const state = scenario.states[currentIndex];
-  $('#img-1').attr('src', state.b1.img).attr('alt', state.b1.cap);
-  $('#text-1').text(state.b1.cap);
-
-  $('#img-2').attr('src', state.b2.img).attr('alt', state.b2.cap);
-  $('#text-2').text(state.b2.cap);
-
-  $('#img-3').attr('src', state.b3.img).attr('alt', state.b3.cap);
-  $('#text-3').text(state.b3.cap);
-
-  const $grid = $('#comic-panel-grid');
-  $grid.css('opacity', 1); 
-  showImagesSequential(520);
-}
+document.addEventListener('DOMContentLoaded', () => {
+    initSelectors();
+});

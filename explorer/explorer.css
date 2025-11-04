@@ -1,0 +1,59 @@
+.form-control, .form-select {
+    border: 1px solid var(--color-border);
+    background-color:rgb(250, 215, 230);
+    transition: all 0.3s;
+    font-family: var(--font-body);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--color-primary) 30%, transparent);
+    background-color: var(--color-card-bg); /* Светлее фон при фокусе */
+}
+
+
+/*карточки*/
+.gesture-card {
+  border-radius: 8px;
+  background-color: var(--color-card-bg);
+  transition: all 0.4s ease;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.gesture-card h1 {
+    font-size: 4rem; 
+    margin: 10px 0;
+    line-height: 1;
+    animation: none; 
+}
+
+.gesture-card h5 {
+  color: var(--color-primary);
+  font-size: 1.2rem;
+  font-weight: 700;
+  font-family: var(--font-header);
+  margin-top: 10px;
+}
+
+.gesture-card p {
+  color: var(--color-text);
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+
+.gesture-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+  border-color: var(--color-secondary); 
+}
+
+.gesture-card {
+    opacity: 0;
+    transform: translateY(30px);
+}

@@ -3,130 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Gesture Challenge - Gesturverse</title>
+    <title>Gesturverse | Global Gesture Challenge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/web-final/main.css"> 
     <link rel="stylesheet" href="css/quiz.css"> 
+    <script src="/web-final/theme.js" defer></script>
 </head>
 <body>
-    <header>
-        <nav class="container">
-            <a href="index.html">Gesturverse Heritage</a>
-            <div>
-                <a href="explorer.html">Explorer</a>
-                <a href="simulator.html">Simulator</a>
-                <a href="quiz.html" style="text-decoration: underline;">Quiz</a>
+    <header class="site-title-bar w-100">
+        <nav class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center py-3 px-3 px-md-5">
+                <a class="fs-4 fw-bold text-decoration-none" href="/web-final/index.html">
+                    <span style="color: var(--color-primary); font-size: 1.5em;">✨</span> <span style="font-family: var(--font-header);">Gesturverse</span>
+                </a>
+                <div class="d-none d-md-flex align-items-center">
+                    <a class="me-4" href="/web-final/explorer/explorer.html">Explorer</a>
+                    <a class="me-4" href="quiz.html">Quiz</a>
+                    <a class="me-4" href="simulator.html">Simulator</a>
+                    <a class="me-4 btn btn-sm" style="background-color: var(--color-secondary); color: white;" href="/web-final/passport/passport.html">My Passport 🛂</a>
+                </div>
+                <div class="form-check form-switch d-flex align-items-center">
+                    <span id="modeIcon" class="me-2 fs-5" style="color: var(--color-secondary);">☀️</span>
+                    <input class="form-check-input" type="checkbox" role="switch" id="darkModeToggle">
+                </div>
             </div>
         </nav>
     </header>
 
-    <div class="container">
-        <h1>Global Gesture Challenge</h1>
-        <p class="text-center" style="font-style: italic; color: var(--color-secondary);">
-            Test your cultural fluency and collect your visas!
-        </p>
-
-        <div class="progress-bar-container">
-            <div id="progress-bar" style="width: 20%;"></div>
-            <span id="progress-text">1 of 5: Iran</span>
-        </div>
-
-        <div id="quiz-area" class="quiz-card">
-            
-            <div class="quiz-question" id="question-1" data-correct="C">
-                <h2>1/5: The Thumbs-Up 👍</h2>
-                <p class="question-scenario">
-                    You have successfully hitchhiked across the countryside in <strong>Iran</strong>. As a sign of thanks, you give the driver a hearty <strong>thumbs-up (👍)</strong>. How is this gesture understood here?
-                </p>
-                <ul class="options-list">
-                    <li class="option-item"><label><input type="radio" name="q1" value="A"> A. "Thank you very much, you're the best!"</label></li>
-                    <li class="option-item"><label><input type="radio" name="q1" value="B"> B. "The ride was great, five stars!"</label></li>
-                    <li class="option-item"><label><input type="radio" name="q1" value="C"> C. As an extremely offensive and vulgar insult.</label></li>
-                    <li class="option-item"><label><input type="radio" name="q1" value="D"> D. "Please stop, I forgot my wallet."</label></li>
-                </ul>
-                <button class="next-btn" onclick="checkAnswer(1)">Check</button> 
+    <main class="container my-5">
+        <div class="main-content p-4 p-md-5 mx-auto" style="max-width: 800px;">
+            <h1 class="display-5 mb-3 text-center" style="color: var(--color-primary);">
+                Global Gesture Challenge
+            </h1>
+            <p class="text-center fs-6 mb-4" style="font-style: italic; color: var(--color-secondary);">
+                Test your cultural fluency and collect your visas!
+            </p>
+            <div class="progress-bar-container mb-4 mx-auto" style="max-width: 600px;">
+                <div id="progress-bar"></div>
+                <span id="progress-text" class="text-sm mt-1 d-block text-center">1 of 5: Iran</span>
             </div>
-
-            <div class="quiz-question" id="question-2" data-correct="C" style="display: none;">
-                <h2>2/5: The "OK" Sign 👌</h2>
-                <p class="question-scenario">
-                    You are in a fish market in <strong>Turkey</strong>. You flash the "OK" sign to the vendor, indicating that the fish looks excellent. How is your gesture likely interpreted?
-                </p>
-                <ul class="options-list">
-                    <li class="option-item"><label><input type="radio" name="q2" value="A"> A. As a sign of approval, meaning "perfectly fine."</label></li>
-                    <li class="option-item"><label><input type="radio" name="q2" value="B"> B. As asking for a quick deal.</label></li>
-                    <li class="option-item"><label><input type="radio" name="q2" value="C"> C. As a derogatory insult or implying they are a zero.</label></li>
-                    <li class="option-item"><label><input type="radio" name="q2" value="D"> D. That you want to buy exactly one fish.</label></li>
-                </ul>
-                <button class="next-btn" onclick="checkAnswer(2)">Check</button> 
-            </div>
-
-            <div class="quiz-question" id="question-3" data-correct="B" style="display: none;">
-                <h2>3/5: The Backwards "V" ✌️</h2>
-                <p class="question-scenario">
-                    You are in a pub in **London**. You flash the "V" sign with the back of your hand facing the person. What did you just tell the bartender?
-                </p>
-                <ul class="options-list">
-                    <li class="option-item"><label><input type="radio" name="q3" value="A"> A. That you want two drinks (Two beers).</label></li>
-                    <li class="option-item"><label><input type="radio" name="q3" value="B"> B. An extremely rude insult, similar to the middle finger.</label></li>
-                    <li class="option-item"><label><input type="radio" name="q3" value="C"> C. That you are signaling for peace or victory.</label></li>
-                    <li class="option-item"><label><input type="radio" name="q3" value="D"> D. That you need two minutes of their time.</label></li>
-                </ul>
-                <button class="next-btn" onclick="checkAnswer(3)">Check</button> 
-            </div>
-
-            <div class="quiz-question" id="question-4" data-correct="A" style="display: none;">
-                <h2>4/5: The Head Nod (Up/Down)</h2>
-                <p class="question-scenario">
-                    At a restaurant in **Bulgaria**, the waiter asks if you enjoyed your meal. You nod your head **up and down** to show appreciation. What did the waiter understand?
-                </p>
-                <ul class="options-list">
-                    <li class="option-item"><label><input type="radio" name="q4" value="A"> A. That you did *not* enjoy the meal (the local sign for "No").</label></li>
-                    <li class="option-item"><label><input type="radio" name="q4" value="B"> B. That you absolutely loved the meal (Universal "Yes").</label></li>
-                    <li class="option-item"><label><input type="radio" name="q4" value="C"> C. That you would like to have the bill immediately.</label></li>
-                    <li class="option-item"><label><input type="radio" name="q4" value="D"> D. That you want to order a second serving.</label></li>
-                </ul>
-                <button class="next-btn" onclick="checkAnswer(4)">Check</button> 
-            </div>
-
-            <div class="quiz-question" id="question-5" data-correct="C" style="display: none;">
-                <h2>5/5: The "Come Here" Finger</h2>
-                <p class="question-scenario">
-                    You are in a crowded market in the **Philippines** and try to signal a friend to come closer by curling your index finger toward yourself. What serious cultural rule did you just break?
-                </p>
-                <ul class="options-list">
-                    <li class="option-item"><label><input type="radio" name="q5" value="A"> A. Nothing, this is universally accepted.</label></li>
-                    <li class="option-item"><label><input type="radio" name="q5" value="B"> B. This gesture is reserved only for children.</label></li>
-                    <li class="option-item"><label><input type="radio" name="q5" value="C"> C. This gesture is used exclusively for calling animals (dogs).</label></li>
-                    <li class="option-item"><label><input type="radio" name="q5" value="D"> D. It means "I want to buy everything here."</label></li>
-                </ul>
-                <button class="next-btn" onclick="checkAnswer(5)">Check</button> 
-            </div>
-
-        </div>
-        
-        <div id="misunderstanding-animation" style="display: none;">
-            <p>Cultural Misunderstanding Comic Strip Placeholder</p>
-        </div>
-
-        <div id="quiz-result" class="quiz-card" style="display: none;">
-            <h2>CHALLENGE COMPLETE!</h2>
-            <p id="result-score" style="font-size: 1.3em;">You answered <span style="color: var(--color-primary);">X</span> questions correctly!</p>
-            
-            <div id="final-feedback" class="feedback-box">
+            <div id="quiz-area">
+                
+                <div class="quiz-card p-4 mb-4" id="question-1" data-correct="C" data-stamp-id="IRAN_THUMBS_UP">
+                    <h2>1/5: The Thumbs-Up 👍</h2>
+                    <p class="question-scenario">
+                        You have successfully hitchhiked across the countryside in <strong>Iran</strong>. As a sign of thanks, you give the driver a hearty <strong>thumbs-up</strong>... What message did you actually send?
+                    </p>
+                    <ul class="options-list">
+                        <li class="option-item"><label><input type="radio" name="q1" value="A"> A. A common sign of approval or 'Good job!'</label></li>
+                        <li class="option-item"><label><input type="radio" name="q1" value="B"> B. A request for a drink.</label></li>
+                        <li class="option-item"><label><input type="radio" name="q1" value="C"> C. A rude, highly vulgar insult (similar to the middle finger).</label></li>
+                        <li class="option-item"><label><input type="radio" name="q1" value="D"> D. It means 'Call me'.</label></li>
+                    </ul>
+                    <div id="feedback-1" class="feedback-box"></div>
+                    <button class="next-btn mt-3" data-q-id="1" onclick="checkAnswer(1)">Check Answer</button>
+                </div>
+                
+                <div class="quiz-card p-4 mb-4" id="question-2" data-correct="C" data-stamp-id="TURKEY_OK_SIGN" style="display: none;">
+                    <h2>2/5: The OK Sign 👌</h2>
+                    <p class="question-scenario">
+                        You're at a fine-dining restaurant in <strong>Turkey</strong>. You flash the server the <strong>"OK" sign</strong> to signal that the food is fantastic. What did the server understand?
+                    </p>
+                    <ul class="options-list">
+                        <li class="option-item"><label><input type="radio" name="q2" value="A"> A. The food is perfect and you are satisfied.</label></li>
+                        <li class="option-item"><label><input type="radio" name="q2" value="B"> B. You need the check immediately.</label></li>
+                        <li class="option-item"><label><input type="radio" name="q2" value="C"> C. A highly aggressive and insulting remark calling them a homosexual or an anus.</label></li>
+                        <li class="option-item"><label><input type="radio" name="q2" value="D"> D. You want to order another round of drinks.</label></li>
+                    </ul>
+                    <div id="feedback-2" class="feedback-box"></div>
+                    <button class="next-btn mt-3" data-q-id="2" onclick="checkAnswer(2)">Check Answer</button>
                 </div>
 
-            <div id="stamps-display">
+                <div class="quiz-card p-4 mb-4" id="question-3" data-correct="B" data-stamp-id="UK_V_SIGN" style="display: none;">
+                    <h2>3/5: The Backward V-Sign ✌️</h2>
+                    <p class="question-scenario">
+                        You're celebrating a friend's birthday in a pub in the **United Kingdom**. You flash a <strong>backward V-sign (palm facing you)</strong> for "Victory!". What happens next?
+                    </p>
+                    <ul class="options-list">
+                        <li class="option-item"><label><input type="radio" name="q3" value="A"> A. Everyone cheers for your victory.</label></li>
+                        <li class="option-item"><label><input type="radio" name="q3" value="B"> B. You have just given everyone the equivalent of the middle finger.</label></li>
+                        <li class="option-item"><label><input type="radio" name="q3" value="C"> C. You successfully ordered two beers.</label></li>
+                        <li class="option-item"><label><input type="radio" name="q3" value="D"> D. It means "Peace out, I'm leaving."</label></li>
+                    </ul>
+                    <div id="feedback-3" class="feedback-box"></div>
+                    <button class="next-btn mt-3" data-q-id="3" onclick="checkAnswer(3)">Check Answer</button>
+                </div>
+                
+                <div class="quiz-card p-4 mb-4" id="question-4" data-correct="A" data-stamp-id="BULGARIA_NOD" style="display: none;">
+                    <h2>4/5: The Head Nod</h2>
+                    <p class="question-scenario">
+                        A vendor in <strong>Bulgaria</strong> asks if you want to buy some traditional crafts. You nod your head up and down enthusiastically. What did you communicate?
+                    </p>
+                    <ul class="options-list">
+                        <li class="option-item"><label><input type="radio" name="q4" value="A"> A. You definitely do *not* want to buy it (up-down means NO).</label></li>
+                        <li class="option-item"><label><input type="radio" name="q4" value="B"> B. You are extremely interested in buying everything.</label></li>
+                        <li class="option-item"><label><input type="radio" name="q4" value="C"> C. You are unsure and need time to think.</label></li>
+                        <li class="option-item"><label><input type="radio" name="q4" value="D"> D. It signals a greeting.</label></li>
+                    </ul>
+                    <div id="feedback-4" class="feedback-box"></div>
+                    <button class="next-btn mt-3" data-q-id="4" onclick="checkAnswer(4)">Check Answer</button>
                 </div>
 
-            <button class="cta-btn" onclick="window.location.href='passport.html'">
-                🛂 CHECK YOUR PASSPORT FOR NEW VISAS
-            </button>
+                <div class="quiz-card p-4 mb-4" id="question-5" data-correct="C" data-stamp-id="PHL_COME_HERE" style="display: none;">
+                    <h2>5/5: The "Come Here" Finger</h2>
+                    <p class="question-scenario">
+                        Lost in the <strong>Philippines</strong>, you need to call over a taxi driver, so you beckon them with a <strong>finger wave</strong>. What social faux pas did you just commit?
+                    </p>
+                    <ul class="options-list">
+                        <li class="option-item"><label><input type="radio" name="q5" value="A"> A. It's a standard way to call someone over.</label></li>
+                        <li class="option-item"><label><input type="radio" name="q5" value="B"> B. This gesture is reserved only for children.</label></li>
+                        <li class="option-item"><label><input type="radio" name="q5" value="C"> C. This gesture is used exclusively for calling animals (dogs) and is highly insulting to a human.</label></li>
+                        <li class="option-item"><label><input type="radio" name="q5" value="D"> D. It means "I want to buy everything here."</label></li>
+                    </ul>
+                    <div id="feedback-5" class="feedback-box"></div>
+                    <button class="next-btn mt-3" data-q-id="5" onclick="checkAnswer(5)">Check Answer</button>
+                </div>
+                
+            </div>
+            
+            <div id="quiz-result" class="quiz-card p-5 text-center" style="display: none;">
+                <h2>CHALLENGE COMPLETE!</h2>
+                <p id="result-score" class="fs-4">You answered <span style="color: var(--color-primary);">X</span> questions correctly!</p>
+                <div id="final-feedback" class="feedback-box p-3 my-4"></div>
+                <div id="stamps-display" class="mt-4"></div>
+                <button class="btn-cta-giant mt-4" onclick="window.location.href='/web-final/passport/passport.html'">
+                     CHECK YOUR PASSPORT FOR NEW VISAS</button>
+            </div>
+            
         </div>
-    </div>
+    </main>
 
-    <footer>
-        <p>© 2025 Gesturverse.</p>
+    <footer class="text-center p-3 mt-auto">
+        <p class="text-sm m-0">© 2025 Gesturverse. Final Project for Web Technologies.</p>
     </footer>
-
-    <script src="js/quiz.js"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/quiz.js"></script>
 </body>
 </html>

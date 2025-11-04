@@ -3,138 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gesture Journey | Home (World Map Background)</title>
+    <title>Gesturverse | Home - The Universe of Gestures</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="homepage.css" rel="stylesheet">
-
-    </head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="main.css" rel="stylesheet"> 
+    <link href="homepage.css" rel="stylesheet"> 
+    <script src="theme.js" defer></script>
+</head>
 <body>
+    <header class="site-title-bar w-100">
+        <nav class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center py-3 px-3 px-md-5">
+                <a class="fs-4 fw-bold text-decoration-none" href="/web-final/index.html">
+                    <span style="color: var(--color-primary); font-size: 1.5em;">✨</span> <span style="font-family: var(--font-header);">Gesturverse</span>
+                </a>
+                
+                <div class="d-none d-md-flex align-items-center">
+                    <a class="me-4" href="explorer/explorer.html">Explorer</a>
+                    <a class="me-4" href="simulator-quiz/quiz.html">Quiz</a>
+                    <a class="me-4" href="simulator-quiz/simulator.html">Simulator</a>
+                    <a class="me-4 btn btn-sm" style="background-color: var(--color-secondary); color: white;" href="passport/passport.html">My Passport 🛂</a>
+                </div>
 
-    <div class="scene-layer">
-        <div class="cloud cloud-1"></div>
-        <div class="cloud cloud-2" style="left: 60%; animation-duration: 35s;"></div>
-        <div class="cloud cloud-3" style="left: 30%; animation-duration: 28s;"></div>
-        
-        <div class="animated-entity airplane-icon">✈️</div> 
-    </div>
+                <div class="form-check form-switch d-flex align-items-center">
+                    <span id="modeIcon" class="me-2 fs-5" style="color: var(--color-secondary);">☀️</span>
+                    <input class="form-check-input" type="checkbox" role="switch" id="darkModeToggle">
+                </div>
+            </div>
+        </nav>
+    </header>
     
-    <div class="wavy-ground-layer"></div>
+    <main class="container my-5">
+        <div class="main-content p-5 mx-auto" style="max-width: 950px;">
+            
+            <h1 class="display-4 mb-4 text-center">
+                Explore the Universe of Gestures
+            </h1>
+            
+            <p class="fs-5 mb-5 text-center">
+                Your <strong>Gesturverse</strong> Passport awaits. Travel virtually, master nonverbal language, and avoid hilarious cultural blunders!
+            </p>
+            
+            <section class="row text-center mb-5">
+                <div class="col-md-4 mb-4">
+                    <h3 class="h4" style="color: var(--color-primary);"><i class="fa-solid fa-map-location-dot"></i> Immersive Explorer</h3>
+                    <p class="text-sm">Dynamic map view showing how one gesture changes meaning across the globe.</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h3 class="h4" style="color: var(--color-primary);"><i class="fa-solid fa-passport"></i> Gamified Passport</h3>
+                    <p class="text-sm">Collect official "Visas" (stamps) for passing Quizzes and becoming a master.</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h3 class="h4" style="color: var(--color-primary);"><i class="fa-solid fa-face-grin-squint"></i> Blunder Simulator</h3>
+                    <p class="text-sm">See funny, comic-strip style animations of cultural misunderstandings in action.</p>
+                </div>
+            </section>
 
-    <div class="main-content">
+            <hr style="border-color: var(--color-border);" class="my-5">
 
-        <header class="site-title-bar w-100">
-            <div class="container-fluid">
-                <div class="d-flex justify-content-between align-items-center px-3 px-md-5">
-                    <a class="fs-4 fw-bold text-dark text-decoration-none" href="index.html" style="z-index: 11;">🗺️ World Explorer Adventure! 🌍</a>
-                    
-                    <div class="form-check form-switch d-flex align-items-center" style="z-index: 11;">
-                        <span class="me-2" style="font-size: 1.5em;" id="modeIcon">☀️</span>
-                        <input class="form-check-input" type="checkbox" role="switch" id="darkModeToggle" style="width: 3.5em; height: 1.5em;">
+            <div class="row justify-content-center text-center g-4">
+                <div class="col-md-6">
+                    <div class="p-4 border rounded" style="background-color: var(--color-bg);">
+                        <h2 class="h5" style="color: var(--color-secondary);">Start Your Journey Now!</h2>
+                        <a href="explorer/explorer.html" class="btn-cta-small w-100 mt-2">
+                            <i class="fa-solid fa-signs-post me-2"></i> EXPLORE GESTURES
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-4 border rounded" style="background-color: var(--color-bg);">
+                        <h2 class="h5" style="color: var(--color-secondary);">Test Your Cultural IQ</h2>
+                        <a href="simulator-quiz/quiz.html" class="btn-cta-small w-100 mt-2" style="background-color: var(--color-primary);">
+                            <i class="fa-solid fa-graduation-cap me-2"></i> TAKE THE QUIZ
+                        </a>
                     </div>
                 </div>
             </div>
-        </header>
-
-        <nav class="my-3 my-md-4" style="z-index: 11;">
-            <ul class="nav nav-pills nav-pills-cartoon">
-                <li class="nav-item"><a class="nav-link nav-link-cartoon" href="/web-final/explorer/explorer.html">🔍 Explore!</a></li>
-                <li class="nav-item"><a class="nav-link nav-link-cartoon" href="/web-final/passport/passport.html">🛂 Passport</a></li>
-                <li class="nav-item"><a class="nav-link nav-link-cartoon" href="/web-final/simulator-quiz/simulator.html">🙈 Simulator!</a></li>
-                <li class="nav-item"><a class="nav-link nav-link-cartoon" href="/web-final/simulator-quiz/quiz.html">✨ Quiz Time!</a></li>
-                <li class="nav-item ms-3"><a class="btn login-btn-cartoon" href="/web-final/passport/sign.html">🔑 Login!</a></li>
-            </ul>
-        </nav>
-
-        <div id="world-map-container" class="shadow-lg">
             
-            <span class="sun-icon">🌞</span>
-            
-            <img 
-                id="geopolitical-map-image" 
-                src="https://i.ytimg.com/vi/eNe-2UMtBv0/maxresdefault.jpg"
-                onerror="this.onerror=null; this.src=map.jpg;"
-                alt="Colorful World Map (YouTube Thumbnail)"
-                style="display: none;"
-            >
-            
-            <div class="animated-text-container">
-                <div class="animated-text">
-                    🌈 Let's Explore Our Fun World!<br>
-                    Discover colorful gestures & cultures around the globe 😄✨
-                </div>
+            <div id="cta-frame" class="mt-5 pt-3">
+                <a href="passport/sign.html" id="startButton" class="btn-cta-giant">
+                    <i class="fa-solid fa-user-lock me-2"></i> Log In / Sign Up for your Passport
+                </a>
             </div>
-        </div>
 
-        <div id="cta-frame">
-            <a href="explorer/explorer.html" class="btn btn-cta-giant" id="startButton">
-                Start Your Gesture Journey!
-            </a>
         </div>
-
-    </div>
-
-    <footer class="text-center py-2 fixed-bottom" style="z-index: 100;">
-        <div class="container">
-            <p class="mb-0 text-white small">
-                <a href="#" class="text-white mx-2">🐦</a> 
-                <a href="#" class="text-white mx-2">📧</a> 
-                <a href="#" class="text-white mx-2">📘</a>
-                <span class="mx-3">© 2025 World Explorer Adventure</span>
-            </p>
-        </div>
+    </main>
+    <footer class="text-center p-3 mt-auto">
+        <p class="text-sm m-0">© 2025 Gesturverse. Final Project for Web Technologies.</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <script>
-        $(document).ready(function() {
-            // Функция для установки состояния Темного режима
-            function setDarkMode(isDark) {
-                if (isDark) {
-                    $('body').addClass('dark-mode');
-                    $('#darkModeToggle').prop('checked', true);
-                    $('#modeIcon').text('🌙'); 
-                    localStorage.setItem('theme', 'dark');
-                } else {
-                    $('body').removeClass('dark-mode');
-                    $('#darkModeToggle').prop('checked', false);
-                    $('#modeIcon').text('☀️'); 
-                    localStorage.setItem('theme', 'light');
-                }
-            }
-
-            // 1. Начальная проверка при загрузке: Применить сохраненные настройки
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                setDarkMode(true);
-            } else {
-                setDarkMode(false); 
-            }
-
-            // 2. Изменение переключателя: Обработка взаимодействия пользователя
-            $('#darkModeToggle').on('change', function() {
-                setDarkMode(this.checked);
-            });
-            
-            // Эффект jQuery: Анимация при наведении на кнопку
-            $('#startButton').hover(
-                function() {
-                    // Небольшое увеличение при наведении
-                    $('#cta-frame').css({
-                        'transform': 'scale(1.05)',
-                        'box-shadow': '0 12px 0 var(--wavy-shadow), 0 20px 40px rgba(0, 0, 0, 0.6)' 
-                    });
-                },
-                function() {
-                    // Сброс при уходе мыши
-                    $('#cta-frame').css({
-                        'transform': 'scale(1)',
-                        'box-shadow': '0 10px 0 var(--wavy-shadow), 0 15px 30px rgba(0, 0, 0, 0.5)'
-                    });
-                }
-            );
-        });
-    </script>
 </body>
 </html>

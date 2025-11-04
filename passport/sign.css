@@ -1,0 +1,64 @@
+body {
+    background-color: var(--color-bg-light);
+}
+
+.sign-card {
+    background-color: var(--color-bg-card);
+    border: 3px solid var(--color-primary);
+    box-shadow: 10px 10px 0 var(--color-secondary), 0 0 30px rgba(0,0,0,0.2);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.form-title {
+    color: var(--color-primary);
+    font-family: var(--font-header);
+    font-weight: 700;
+}
+
+.input-field {
+    border-color: var(--color-secondary);
+    background-color: var(--color-bg-light);
+    color: var(--color-text);
+    transition: border-color 0.3s;
+}
+
+.input-field:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 0.25rem rgba(201, 93, 75, 0.25); 
+}
+
+.btn-form {
+    background-color: var(--color-secondary);
+    color: white;
+    border: none;
+    transition: background-color 0.3s, transform 0.2s;
+    font-weight: bold;
+}
+
+.btn-form:hover {
+    background-color: var(--color-primary);
+    transform: translateY(-2px);
+}
+
+.error-message {
+    color: #cc0000; 
+    font-size: 0.85rem;
+    margin-top: 5px;
+}
+
+.nav-link-switch {
+    color: var(--color-primary);
+    font-weight: bold;
+    cursor: pointer;
+}
+[data-theme="dark"] .sign-card {
+    background-color: var(--color-bg-dark);
+    border-color: var(--color-secondary);
+    box-shadow: 10px 10px 0 var(--color-primary), 0 0 30px rgba(0,0,0,0.5);
+}
+
+[data-theme="dark"] .input-field {
+    background-color: #3e3224; 
+    border-color: #888;
+    color: var(--color-bg-light);
+}
