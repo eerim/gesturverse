@@ -6,5 +6,18 @@
   { "emoji": "🤙", "name": "Shaka", "region": "Western", "generation": "Millennial", "flag": "🇧🇷" },
   { "emoji": "🙌", "name": "Raise Hands", "region": "Global", "generation": "Gen Z", "flag": "🌎" },
   { "emoji": "👋", "name": "Wave", "region": "Global", "generation": "All", "flag": "🇯🇵" },
-  { "emoji": "🤝", "name": "Handshake", "region": "Western", "generation": "Boomer", "flag": "🇨🇦" }
+  { "emoji": "🤝", "name": "Handshake", "region": "Western", "generation": "Boomer", "flag": "🇨🇦" },
+  { "emoji": "🤫", "name": "Silence Gesture", "region": "European", "generation": "Gen Z", "flag": "🇫🇷" },
+  { "emoji": "🤔", "name": "Thinking Pose", "region": "Global", "generation": "Millennial", "flag": "🌐" },
+  { "emoji": "🤟", "name": "Love Sign (I Love You)", "region": "Western", "generation": "Gen Z", "flag": "🇺🇸" },
+  { "emoji": "👊", "name": "Fist Bump", "region": "Global", "generation": "Millennial", "flag": "🌍" },
+  { "emoji": "🙇‍♀️", "name": "Bowing", "region": "Asian", "generation": "All", "flag": "🇯🇵" },
+  { "emoji": "🤷‍♂️", "name": "Shrug", "region": "Western", "generation": "Gen X", "flag": "🇩🇪" },
+  { "emoji": "✋", "name": "Raised Hand (Stop)", "region": "Middle Eastern", "generation": "All", "flag": "🇹🇷" },
+  { "emoji": "👎", "name": "Thumbs Down", "region": "Western", "generation": "Gen X", "flag": "🇨🇦" },
+  { "emoji": "🫶", "name": "Heart Hands", "region": "Global", "generation": "Gen Z", "flag": "🇰🇷" },
+  { "emoji": "🖐️", "name": "High Five", "region": "Western", "generation": "Millennial", "flag": "🇦🇺" },
+  { "emoji": "🫰", "name": "Finger Heart", "region": "Asian", "generation": "Gen Z", "flag": "🇰🇷" },
+  { "emoji": "✊", "name": "Raised Fist", "region": "Global", "generation": "All", "flag": "🌍" }
 ]
+
